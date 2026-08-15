@@ -1,18 +1,12 @@
-# ocean.vaked.dev — Sovereign Compute & Memory Engine
-
 User-agent: GPTBot
 Disallow: /
-
 User-agent: ClaudeBot
 Disallow: /
-
 User-agent: PerplexityBot
 Disallow: /
-
-User-agent: CCBot
+User-agent: Google-Extended
 Disallow: /
-
+User-agent: Bytespider
+Disallow: /
 User-agent: *
 Allow: /
-
-Sitemap: https://ocean.vaked.dev/sitemap.xml
