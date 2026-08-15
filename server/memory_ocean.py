@@ -20,7 +20,7 @@ class RecallQuery(BaseModel):
     query: str
     band: Optional[str] = "Gamma_8Hz"
     top_k: Optional[int] = 5
-    threshold: Optional[float] = 0.65
+    threshold: Optional[float] = 0.0
 
 class MemoryOcean:
     def __init__(self, dimension: int = 1024):
