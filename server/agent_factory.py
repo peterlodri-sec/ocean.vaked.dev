@@ -35,6 +35,7 @@ class AgentFactory:
     def __init__(self):
         self.workers = [
             AgentWorker("quant-risk-reviewer", "Evaluates parameter bounds & mathematical proofs", 1800),
+            AgentWorker("smart-tree-archaeologist", "AST directory compaction & git consciousness recall via 8b-is/smart-tree", 1200),
             AgentWorker("swe-af", "Codebase hygiene, zero-allocation tests & PR packaging", 3600),
             AgentWorker("spider-agent", "Constellation health checks & telemetry monitoring", 900),
             AgentWorker("worklog-scribe", "Summarizes fleet achievements to worklog.vaked.dev", 7200),
