@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  ocean-core:
+    build: .
+    container_name: ocean-compute-core
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - ENVIRONMENT=production
+      - SOVEREIGN_SYNC=0.5597
+    volumes:
+      - ./server:/app/server
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

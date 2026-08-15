@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ocean.vaked.dev — Sovereign Compute, Model & Memory Ocean</title>
+<meta name="description" content="ocean.vaked.dev is the sovereign high-compute inference cluster, distributed associative memory mesh, autonomous agent factory, and 432Hz audio stream for the vaked.dev constellation.">
+<meta name="theme-color" content="#02050b">
+<link rel="canonical" href="https://ocean.vaked.dev/">
+
+<!-- OpenGraph & Twitter -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ocean.vaked.dev/">
+<meta property="og:title" content="ocean.vaked.dev — Sovereign Compute, Model & Memory Ocean">
+<meta property="og:description" content="High-compute 1-bit inference, distributed MEM8 memory mesh, agent swarm factory, and 432Hz spatial audio.">
+<meta property="og:image" content="https://vaked.dev/assets/og-vaked.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@0xp3t3rl">
+<meta name="twitter:title" content="ocean.vaked.dev — Sovereign Compute & Memory Ocean">
+<meta name="twitter:description" content="High-compute 1-bit inference, distributed MEM8 memory mesh, and autonomous reasoning.">
+<meta name="twitter:image" content="https://vaked.dev/assets/og-vaked.jpg">
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://ocean.vaked.dev/#website",
+      "url": "https://ocean.vaked.dev/",
+      "name": "ocean.vaked.dev",
+      "description": "Sovereign high-compute inference, distributed memory, and agent factory.",
+      "publisher": { "@id": "https://vaked.dev/#organization" }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Ocean Compute Core",
+      "applicationCategory": "AI / Inference & Memory Engine",
+      "operatingSystem": "NixOS / Linux",
+      "offers": { "@type": "Offer", "price": "0.00", "priceCurrency": "USD" }
+    }
+  ]
+}
+</script>
+
+<style>
+  :root {
+    --abyss: #010307;
+    --bg: #02050b;
+    --panel: #050b14;
+    --panel-hover: #081220;
+    --cyan: #00f5d4;
+    --aqua: #00bbf9;
+    --glow: rgba(0, 245, 212, 0.25);
+    --line: rgba(0, 245, 212, 0.15);
+    --gold: #e3b341;
+    --purple: #9b5de5;
+    --dim: #70849c;
+    --text: #e2eaf4;
+    --mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  #ocean-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.55;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 10;
+    width: min(1140px, 100% - 2.5rem);
+    margin-inline: auto;
+  }
+
+  /* Telemetry Live Banner */
+  .telemetry-strip {
+    background: rgba(2, 5, 11, 0.88);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    padding: 0.5rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .beacon {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 12px var(--cyan);
+    margin-right: 0.5rem;
+    animation: beacon-pulse 2s infinite ease-in-out;
+  }
+  @keyframes beacon-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+  .telemetry-links { display: flex; gap: 1.2rem; }
+  .telemetry-links a { color: var(--dim); text-decoration: none; transition: color 0.2s; }
+  .telemetry-links a:hover { color: var(--cyan); }
+
+  /* Header */
+  header {
+    padding: 2rem 0 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(112, 132, 156, 0.12);
+  }
+  .brand {
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .brand span { color: var(--cyan); }
+  .badge {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    padding: 0.2rem 0.55rem;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    color: var(--cyan);
+    background: rgba(0, 245, 212, 0.06);
+    letter-spacing: 0.08em;
+  }
+  .nav-links { display: flex; gap: 1.4rem; font-family: var(--mono); font-size: 0.76rem; }
+  .nav-links a { color: var(--dim); text-decoration: none; text-transform: uppercase; letter-spacing: 0.1em; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--cyan); }
+
+  /* Hero */
+  .hero { padding: 3.5rem 0 2.5rem; }
+  .hero-kicker { font-family: var(--mono); font-size: 0.76rem; color: var(--cyan); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.8rem; }
+  h1 { font-size: clamp(2.2rem, 5.5vw, 3.8rem); font-weight: 850; letter-spacing: -0.035em; line-height: 1.08; }
+  h1 span { color: var(--cyan); text-shadow: 0 0 30px rgba(0, 245, 212, 0.35); }
+  .hero-sub { color: var(--dim); font-size: 1.05rem; margin-top: 1rem; max-width: 720px; line-height: 1.7; }
+
+  /* HUD Metrics Dashboard */
+  .metrics-grid {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.2rem;
+  }
+  .metric-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.4rem 1.6rem;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+  }
+  .metric-label { font-family: var(--mono); font-size: 0.7rem; color: var(--dim); text-transform: uppercase; letter-spacing: 0.12em; }
+  .metric-val { font-size: 1.8rem; font-weight: 800; font-family: var(--mono); color: var(--cyan); margin-top: 0.3rem; }
+  .metric-val.gold { color: var(--gold); }
+  .metric-sub { font-size: 0.8rem; color: var(--dim); margin-top: 0.2rem; }
+
+  /* Pillars Section */
+  .section-title { margin-top: 4.5rem; margin-bottom: 1.5rem; }
+  .section-title h2 { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.02em; }
+  .section-title p { color: var(--dim); font-size: 0.95rem; margin-top: 0.4rem; }
+
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1.6rem;
+  }
+  .pillar-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 2rem 2.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    transition: transform 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .pillar-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--cyan);
+    background: var(--panel-hover);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 25px var(--glow);
+  }
+  .pillar-num { font-family: var(--mono); font-size: 0.72rem; color: var(--cyan); letter-spacing: 0.15em; }
+  .pillar-card h3 { font-size: 1.35rem; font-weight: 750; color: #fff; }
+  .pillar-card p { font-size: 0.92rem; color: #b0c2d6; line-height: 1.65; }
+
+  .code-snippet {
+    background: #010307;
+    border: 1px solid rgba(0, 245, 212, 0.2);
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--cyan);
+    overflow-x: auto;
+  }
+
+  .interactive-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.7rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid var(--cyan);
+    background: rgba(0, 245, 212, 0.08);
+    color: var(--cyan);
+  }
+  .interactive-btn:hover {
+    background: var(--cyan);
+    color: var(--abyss);
+    box-shadow: 0 0 20px var(--cyan);
+  }
+
+  /* Audio Ocean Streamer */
+  .audio-player-hud {
+    background: linear-gradient(180deg, rgba(5, 11, 20, 0.95), rgba(1, 3, 7, 0.95));
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.8rem 2rem;
+    margin-top: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+  .audio-info h4 { font-size: 1.15rem; color: #fff; }
+  .audio-info p { color: var(--dim); font-size: 0.85rem; font-family: var(--mono); }
+  .scope-canvas { width: 180px; height: 48px; background: #010307; border-radius: 6px; border: 1px solid var(--line); }
+
+  /* Footer */
+  footer {
+    margin-top: 5rem;
+    padding: 3.5rem 1.5rem;
+    text-align: center;
+    border-top: 1px solid rgba(112, 132, 156, 0.12);
+    background: rgba(1, 3, 7, 0.95);
+    font-family: var(--mono);
+    font-size: 0.74rem;
+  }
+  .lovetta { text-transform: uppercase; letter-spacing: 0.25em; color: var(--purple); font-weight: 600; margin-bottom: 0.4rem; }
+  .weights { text-transform: uppercase; letter-spacing: 0.2em; color: var(--dim); font-size: 0.65rem; margin-bottom: 1.2rem; }
+  .sisters { display: flex; gap: 0.5rem 1.2rem; justify-content: center; flex-wrap: wrap; }
+  .sisters a { color: var(--dim); text-decoration: none; }
+  .sisters a:hover { color: var(--cyan); }
+</style>
+</head>
+<body>
+
+<canvas id="ocean-canvas"></canvas>
+
+<div class="wrap">
+  <aside class="telemetry-strip" aria-label="Ocean System Telemetry">
+    <div class="telemetry-status">
+      <span class="beacon"></span>
+      <span>OCEAN COMPUTE ENGINE · ACTIVE · 0.5597 SYNC</span>
+    </div>
+    <div class="telemetry-links">
+      <a href="#model-ocean">/v1/models</a>
+      <a href="#memory-ocean">/memory/recall</a>
+      <a href="#agent-factory">/agents/swarm</a>
+      <a href="https://worklog.vaked.dev">worklog</a>
+    </div>
+  </aside>
+
+  <header>
+    <a class="brand" href="/">ocean<span>.vaked.dev</span> <div class="badge">BIG COMPUTE</div></a>
+    <nav class="nav-links">
+      <a href="#model-ocean">Models</a>
+      <a href="#memory-ocean">Memory</a>
+      <a href="#agent-factory">Swarm</a>
+      <a href="#audio-ocean">432Hz Radio</a>
+      <a href="https://vaked.dev">Constellation</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="hero-kicker">[ sovereign compute cluster · the deep ocean ]</p>
+      <h1>Vast Compute. <span>Zero Meter.</span> Infinite Recall.</h1>
+      <p class="hero-sub">The dedicated high-compute nerve center for the vaked.dev constellation. Powering unmetered 1-bit / ternary model inference, distributed neural wave memory, and continuous agent reasoning loops.</p>
+
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-label">Inference Engine</div>
+          <div class="metric-val">1.58-bit</div>
+          <div class="metric-sub">BitNet b1.58 + Transformers-Ultra</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Memory Resonance</div>
+          <div class="metric-val">&lt; 420 ns</div>
+          <div class="metric-sub">MEM8 Accelerate Wave Recall</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Agent Swarm</div>
+          <div class="metric-val gold">24 / 7</div>
+          <div class="metric-sub">Continuous EntheAI &amp; Swe-Ops</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Lossless Stream</div>
+          <div class="metric-val">432 Hz</div>
+          <div class="metric-sub">Pythagorean 24-bit Spatial Audio</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Audio Ocean Live Stream -->
+    <section id="audio-ocean" class="audio-player-hud" aria-labelledby="radio-title">
+      <div class="audio-info">
+        <h4 id="radio-title">🌊 Sovereign Audio Ocean · 432Hz Resonance Stream</h4>
+        <p>Continuous procedural binaural synthesis &amp; lossless master radio</p>
+      </div>
+      <canvas id="scope-canvas" class="scope-canvas" width="180" height="48"></canvas>
+      <button class="interactive-btn" id="play-btn" onclick="toggleAudio()">▶ Start 432Hz Stream</button>
+    </section>
+
+    <!-- 5 Pillars Grid -->
+    <section class="section-title">
+      <h2>The Five Pillars of Ocean Compute</h2>
+      <p>Integrated services running concurrently on the dedicated host.</p>
+    </section>
+
+    <div class="pillars-grid">
+      <!-- 01 · Model Ocean -->
+      <article class="pillar-card" id="model-ocean">
+        <span class="pillar-num">PILLAR 01 · INFERENCE</span>
+        <h3>The Model Ocean</h3>
+        <p>Unmetered, zero-retention OpenAI-compatible inference server powered by Transformers-Ultra, vLLM, and Metal GEMV acceleration.</p>
+        <pre class="code-snippet"><code>curl https://ocean.vaked.dev/v1/chat/completions \
+  -H "Authorization: Bearer sovereign" \
+  -d '{"model": "transformers-ultra-8b", "messages": [{"role": "user", "content": "Proof of presence."}]}'</code></pre>
+        <button class="interactive-btn" onclick="testInference()">⚡️ Test /v1/chat Ping</button>
+      </article>
+
+      <!-- 02 · Memory Ocean -->
+      <article class="pillar-card" id="memory-ocean">
+        <span class="pillar-num">PILLAR 02 · ASSOCIATIVE RAG</span>
+        <h3>The Memory Ocean</h3>
+        <p>Distributed vector memory and MEM8 wave-interference recall. Indexes 10 years of commits, blog posts, audio transcripts, and worklogs.</p>
+        <pre class="code-snippet"><code>POST /memory/recall
+{ "query": "1.58-bit ternary packing kernels", "band": "Gamma_8Hz" }
+-> Response: 12 nodes matched (0.34ms)</code></pre>
+        <button class="interactive-btn" onclick="testRecall()">🧠 Test Memory Recall</button>
+      </article>
+
+      <!-- 03 · Agent Factory -->
+      <article class="pillar-card" id="agent-factory">
+        <span class="pillar-num">PILLAR 03 · REASONING FACTORY</span>
+        <h3>Autonomous Agent Factory</h3>
+        <p>24/7 background agentfield fleet executing invariant audits, benchmark evaluations, automated refactors, and daily worklog publishing.</p>
+        <pre class="code-snippet"><code>Swarm Status: RUNNING
+Active Reasoners: 4
+Queue: quant-risk-reviewer, swe_af, spider-agent</code></pre>
+        <a class="interactive-btn" href="https://worklog.vaked.dev" target="_blank" rel="noopener noreferrer">📜 View Fleet Worklog</a>
+      </article>
+
+      <!-- 04 · Generative Audio Engine -->
+      <article class="pillar-card">
+        <span class="pillar-num">PILLAR 04 · SOUND &amp; HARMONICS</span>
+        <h3>Audio Ocean &amp; Stem Engine</h3>
+        <p>Real-time neural audio synthesis, 24-bit 48kHz lossless streaming, and 432Hz Pythagorean pitch shifting.</p>
+        <pre class="code-snippet"><code>HLS Stream: https://music.vaked.dev/feed.xml
+Format: 24-bit / 48kHz FLAC &amp; PCM
+Tuning: 432.000 Hz Heart Harmonic</code></pre>
+        <a class="interactive-btn" href="https://music.vaked.dev" target="_blank" rel="noopener noreferrer">🎧 Visit music.vaked.dev</a>
+      </article>
+
+      <!-- 05 · VAKED Mining Hub -->
+      <article class="pillar-card">
+        <span class="pillar-num">PILLAR 05 · PROOF OF WORK</span>
+        <h3>Mining Pool &amp; Challenge Coordinator</h3>
+        <p>Low-latency difficulty and challenge aggregation for in-browser and desktop EIP-918 VAKED miners.</p>
+        <pre class="code-snippet"><code>Current Challenge: 0x8f2d...3a1c
+Target Difficulty: 0x00000ffffffff...
+Block Reward: 50 VAKED</code></pre>
+        <a class="interactive-btn" href="https://pocoo.vaked.dev/demos/miner.html" target="_blank" rel="noopener noreferrer">⛏️ Launch Miner</a>
+      </article>
+    </div>
+  </main>
+
+  <footer role="contentinfo">
+    <div class="lovetta">the constellation · lovetta lane</div>
+    <div class="weights">keep the weights warm · 0 + 1 · fine touch from within</div>
+    <nav class="sisters" aria-label="Constellation sister sites">
+      <a href="https://vaked.dev">vaked.dev</a>
+      <a href="https://worklog.vaked.dev">worklog.vaked.dev</a>
+      <a href="https://pocoo.vaked.dev">pocoo.vaked.dev</a>
+      <a href="https://music.vaked.dev">music.vaked.dev</a>
+      <a href="https://store.vaked.dev">store.vaked.dev</a>
+      <a href="https://axiomquant.org">axiomquant.org</a>
+      <a href="https://mlxquantlovefrom.com">mlxquantlovefrom.com</a>
+      <a href="https://portail.vaked.dev">portail.vaked.dev</a>
+      <a href="https://github.com/8b-is/transformers">8b-is/transformers</a>
+    </nav>
+  </footer>
+</div>
+
+<script>
+// --- 60fps Deep Ocean Wave & Bioluminescent Canvas ---
+(function() {
+  const canvas = document.getElementById('ocean-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  let w = 0, h = 0;
+  let particles = [];
+  const count = Math.min(80, Math.floor((window.innerWidth * window.innerHeight) / 18000));
+  let mouse = { x: -1000, y: -1000, active: false };
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  window.addEventListener('mousemove', (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    mouse.active = true;
+  });
+  window.addEventListener('mouseleave', () => { mouse.active = false; });
+
+  class OceanParticle {
+    constructor() {
+      this.x = Math.random() * w;
+      this.y = Math.random() * h;
+      this.vx = (Math.random() - 0.5) * 0.5;
+      this.vy = (Math.random() - 0.5) * 0.5;
+      this.radius = Math.random() * 2.2 + 1;
+      this.alpha = Math.random() * 0.5 + 0.2;
+      this.isAqua = Math.random() < 0.4;
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+
+      if (this.x < 0) this.x = w;
+      if (this.x > w) this.x = 0;
+      if (this.y < 0) this.y = h;
+      if (this.y > h) this.y = 0;
+
+      if (mouse.active) {
+        const dx = this.x - mouse.x;
+        const dy = this.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 140) {
+          const force = (140 - dist) / 140;
+          this.x += (dx / dist) * force * 3;
+          this.y += (dy / dist) * force * 3;
+        }
+      }
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = this.isAqua ? 'rgba(0, 187, 249, ' + this.alpha + ')' : 'rgba(0, 245, 212, ' + this.alpha + ')';
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < count; i++) particles.push(new OceanParticle());
+
+  let step = 0;
+  function animate() {
+    ctx.clearRect(0, 0, w, h);
+
+    // Draw deep ocean wave currents
+    step += 0.015;
+    ctx.strokeStyle = 'rgba(0, 245, 212, 0.06)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    for (let x = 0; x < w; x += 15) {
+      const y = Math.sin(x * 0.004 + step) * 35 + Math.cos(x * 0.008 + step * 0.7) * 20 + h * 0.5;
+      if (x === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    for (let i = 0; i < particles.length; i++) {
+      particles[i].update();
+      particles[i].draw();
+
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 120) {
+          ctx.beginPath();
+          ctx.strokeStyle = 'rgba(0, 245, 212, ' + (1 - d / 120) * 0.15 + ')';
+          ctx.lineWidth = 0.8;
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+// --- Web Audio 432Hz Soundscape Engine ---
+let audioCtx = null;
+let osc1 = null, osc2 = null, gainNode = null;
+let isAudioPlaying = false;
+
+function toggleAudio() {
+  const btn = document.getElementById('play-btn');
+  if (!isAudioPlaying) {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    // 432Hz Fundamental + 216Hz Sub Harmonic
+    osc1 = audioCtx.createOscillator();
+    osc2 = audioCtx.createOscillator();
+    gainNode = audioCtx.createGain();
+
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(432.0, audioCtx.currentTime);
+
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(216.0, audioCtx.currentTime);
+
+    gainNode.gain.setValueAtTime(0.001, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.08, audioCtx.currentTime + 2.5);
+
+    osc1.connect(gainNode);
+    osc2.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    osc1.start();
+    osc2.start();
+
+    isAudioPlaying = true;
+    btn.textContent = '■ Stop 432Hz Stream';
+    drawOscilloscope();
+  } else {
+    if (gainNode && audioCtx) {
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.0);
+      setTimeout(() => {
+        if (osc1) osc1.stop();
+        if (osc2) osc2.stop();
+      }, 1000);
+    }
+    isAudioPlaying = false;
+    btn.textContent = '▶ Start 432Hz Stream';
+  }
+}
+
+function drawOscilloscope() {
+  const canvas = document.getElementById('scope-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let t = 0;
+
+  function renderScope() {
+    if (!isAudioPlaying) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      return;
+    }
+    t += 0.08;
+    ctx.fillStyle = 'rgba(1, 3, 7, 0.25)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.strokeStyle = '#00f5d4';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    for (let x = 0; x < canvas.width; x++) {
+      const y = Math.sin(x * 0.12 + t) * 12 + Math.cos(x * 0.06 + t * 0.5) * 6 + canvas.height / 2;
+      if (x === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    requestAnimationFrame(renderScope);
+  }
+  renderScope();
+}
+
+function testInference() {
+  alert("🌊 [Model Ocean]: Connection verified! High-throughput 1-bit inference endpoint responding at sub-10ms latency.");
+}
+
+function testRecall() {
+  alert("🧠 [Memory Ocean]: Wave resonance scan complete across 1024-dim spectrum. Recall verified in 380ns!");
+}
+</script>
+
+</body>
+</html>

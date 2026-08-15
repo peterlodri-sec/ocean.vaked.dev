@@ -1,0 +1,11 @@
+{
+  "name": "ocean-vaked-dev",
+  "version": "1.0.0",
+  "description": "Sovereign High-Compute Inference, Distributed Memory, and Swarm Hub",
+  "scripts": {
+    "deploy": "npx wrangler pages deploy . --project-name ocean-vaked-dev --commit-dirty=true"
+  },
+  "keywords": ["ocean", "compute", "inference", "vaked", "sovereign"],
+  "author": "Peter Lodri",
+  "license": "MIT"
+}
