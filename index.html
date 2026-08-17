@@ -379,6 +379,52 @@
     color: var(--dim);
   }
 
+  /* VAKED Token Readout (inside the node panel) */
+  .node-divider {
+    height: 1px;
+    background: rgba(112, 132, 156, 0.15);
+    margin: 1.15rem 0;
+  }
+  .node-token-head {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+  .node-unit {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+  .node-val.gold { color: var(--gold); text-shadow: 0 0 18px rgba(227, 179, 65, 0.25); }
+  .node-val.dim { color: var(--dim); text-shadow: none; }
+  .node-foot {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1.2rem;
+    flex-wrap: wrap;
+  }
+  .node-contract {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: var(--dim);
+    border-bottom: 1px solid rgba(0, 245, 212, 0.25);
+    text-decoration: none;
+    transition: color 0.18s ease, border-color 0.18s ease;
+  }
+  .node-contract:hover { color: var(--cyan); border-color: var(--cyan); }
+  .node-blockline {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    color: var(--dim);
+  }
+
   /* Footer */
   footer {
     margin-top: 5rem;
@@ -487,6 +533,29 @@
           <div class="progress-fill" id="node-progress-fill"></div>
         </div>
         <div class="progress-caption" id="node-progress-caption"></div>
+      </div>
+
+      <div class="node-divider" role="separator"></div>
+
+      <div class="node-token">
+        <div class="node-token-head">
+          <span class="metric-label">VAKED Token</span>
+          <span class="node-cache" id="vaked-cache" hidden>cached · ≤15s</span>
+        </div>
+        <div class="node-metrics">
+          <div class="node-metric">
+            <span class="metric-label">Total Supply</span>
+            <span class="node-val dim"><span id="vaked-supply">—</span> <span class="node-unit">VAKED</span></span>
+          </div>
+          <div class="node-metric">
+            <span class="metric-label">Operator Balance</span>
+            <span class="node-val dim"><span id="vaked-balance">—</span> <span class="node-unit">VAKED</span></span>
+          </div>
+        </div>
+        <div class="node-foot">
+          <a class="node-contract" id="vaked-contract" href="https://repo.sourcify.dev/137/0x2Ae7DA713A2c8527AF70825C0F79632AF2e2ae4A" target="_blank" rel="noopener noreferrer">0x2Ae7…2ae4A</a>
+          <span class="node-blockline" id="vaked-blockline">block —</span>
+        </div>
       </div>
     </div>
 
@@ -780,10 +849,14 @@ function testRecall() {
 }
 
 // --- Polygon Sovereign Node Status ---
-// Fetches GET /polygon/status (same origin, FastAPI compute server) on load,
-// then refreshes every 30s. Always renders — the endpoint never 5xx.
+// Fetches GET /polygon/status + GET /polygon/vaked (same origin, FastAPI
+// compute server) on load, then refreshes every 30s. Always renders —
+// neither endpoint ever 5xx.
 (function () {
   const REFRESH_MS = 30000;
+
+  const VAKED_CONTRACT = '0x2Ae7DA713A2c8527AF70825C0F79632AF2e2ae4A';
+  const VAKED_OPERATOR = '0xbcA9E062c3dD3a2f198C917e77b9F8D5F03fCF3D';
 
   const dot = document.getElementById('node-dot');
   const stateEl = document.getElementById('node-state');
@@ -795,6 +868,12 @@ function testRecall() {
   const fill = document.getElementById('node-progress-fill');
   const track = document.getElementById('node-progress-track');
   const caption = document.getElementById('node-progress-caption');
+
+  const vakedSupply = document.getElementById('vaked-supply');
+  const vakedBalance = document.getElementById('vaked-balance');
+  const vakedCache = document.getElementById('vaked-cache');
+  const vakedContract = document.getElementById('vaked-contract');
+  const vakedBlockline = document.getElementById('vaked-blockline');
   if (!dot || !stateEl) return;
 
   const LIVE = 'live', SYNCING = 'syncing', OFFLINE = 'offline';
@@ -856,13 +935,48 @@ function testRecall() {
     render({ rpcUrl: null, syncing: null, cached: false });
   }
 
+  function truncateAddr(addr) {
+    return addr && addr.length > 12 ? addr.slice(0, 6) + '…' + addr.slice(-5) : (addr || '—');
+  }
+
+  function renderVaked(data) {
+    // Values are passed through exactly as the backend sends them — never reformatted.
+    const ok = data && data.totalSupplyVaked !== null && data.totalSupplyVaked !== undefined;
+    const supply = ok ? String(data.totalSupplyVaked) : '—';
+    const operatorBalance =
+      ok && data.balances && data.balances[VAKED_OPERATOR]
+        ? String(data.balances[VAKED_OPERATOR].vaked)
+        : '—';
+    vakedSupply.textContent = supply;
+    vakedBalance.textContent = operatorBalance;
+    vakedSupply.parentElement.className = 'node-val ' + (ok ? 'gold' : 'dim');
+    vakedBalance.parentElement.className = 'node-val ' + (operatorBalance !== '—' ? 'gold' : 'dim');
+    vakedBlockline.textContent = 'block ' + fmt(data && data.blockNumber);
+    if (vakedContract) {
+      const contract = (data && data.contract) || VAKED_CONTRACT;
+      vakedContract.textContent = truncateAddr(contract);
+      vakedContract.href = 'https://repo.sourcify.dev/137/' + contract;
+    }
+    vakedCache.hidden = !(data && data.cached === true);
+  }
+
+  function renderVakedOffline() {
+    renderVaked(null);
+  }
+
   async function refresh() {
     try {
       const res = await fetch('/polygon/status');
-      if (!res.ok) { renderOffline(); return; }
-      render(await res.json());
+      if (!res.ok) { renderOffline(); } else { render(await res.json()); }
     } catch (err) {
       renderOffline();
+    }
+
+    try {
+      const res = await fetch('/polygon/vaked');
+      if (!res.ok) { renderVakedOffline(); } else { renderVaked(await res.json()); }
+    } catch (err) {
+      renderVakedOffline();
     }
   }
 
