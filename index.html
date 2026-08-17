@@ -275,6 +275,110 @@
   .audio-info p { color: var(--dim); font-size: 0.85rem; font-family: var(--mono); }
   .scope-canvas { width: 180px; height: 48px; background: #010307; border-radius: 6px; border: 1px solid var(--line); }
 
+  /* Polygon Sovereign Node Status */
+  .node-panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.5rem 1.6rem 1.6rem;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+  }
+  .node-head {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+  .node-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #3a4a5e;
+    flex: none;
+  }
+  .node-dot.live {
+    background: var(--cyan);
+    box-shadow: 0 0 12px var(--cyan);
+    animation: beacon-pulse 2s infinite ease-in-out;
+  }
+  .node-dot.syncing {
+    background: var(--gold);
+    box-shadow: 0 0 12px rgba(227, 179, 65, 0.55);
+    animation: beacon-pulse 1.6s infinite ease-in-out;
+  }
+  .node-state {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+  .node-state.live { color: var(--cyan); }
+  .node-state.syncing { color: var(--gold); }
+  .node-cache {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--dim);
+    border: 1px solid rgba(112, 132, 156, 0.35);
+    border-radius: 4px;
+    padding: 0.16rem 0.5rem;
+    background: rgba(112, 132, 156, 0.08);
+    white-space: nowrap;
+  }
+  .node-metrics {
+    margin-top: 1.25rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+  }
+  .node-metric {
+    background: rgba(1, 3, 7, 0.55);
+    border: 1px solid rgba(112, 132, 156, 0.18);
+    border-radius: 10px;
+    padding: 0.85rem 1.1rem;
+    min-width: 0;
+  }
+  .node-val {
+    display: block;
+    font-family: var(--mono);
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-top: 0.3rem;
+    letter-spacing: -0.01em;
+  }
+  .node-val.cyan { color: var(--cyan); text-shadow: 0 0 18px rgba(0, 245, 212, 0.3); }
+  .node-val.dim { color: var(--dim); }
+  .node-val.rpc { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.01em; overflow-wrap: anywhere; }
+  .node-progress { margin-top: 1.1rem; }
+  .progress-track {
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(1, 3, 7, 0.9);
+    border: 1px solid rgba(112, 132, 156, 0.25);
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(227, 179, 65, 0.55), var(--gold));
+    transition: width 1s ease;
+  }
+  .progress-caption {
+    margin-top: 0.45rem;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    color: var(--dim);
+  }
+
   /* Footer */
   footer {
     margin-top: 5rem;
@@ -350,6 +454,41 @@
         </div>
       </div>
     </section>
+
+    <!-- Polygon Sovereign Node -->
+    <section class="section-title" id="polygon-node" aria-labelledby="polygon-node-title">
+      <p class="hero-kicker">[ chain integration · polygon pos ]</p>
+      <h2 id="polygon-node-title">Polygon Sovereign Node</h2>
+      <p>Live status of the constellation's Polygon full node.</p>
+    </section>
+
+    <div class="node-panel" role="status" aria-label="Polygon node status">
+      <div class="node-head">
+        <span class="node-dot" id="node-dot" aria-hidden="true"></span>
+        <span class="node-state" id="node-state">Connecting…</span>
+        <span class="node-cache" id="node-cache" hidden>cached · ≤15s</span>
+      </div>
+      <div class="node-metrics">
+        <div class="node-metric">
+          <span class="metric-label">Block Height</span>
+          <span class="node-val dim" id="node-block">—</span>
+        </div>
+        <div class="node-metric">
+          <span class="metric-label">Chain ID</span>
+          <span class="node-val dim" id="node-chain">—</span>
+        </div>
+        <div class="node-metric">
+          <span class="metric-label">RPC</span>
+          <span class="node-val rpc" id="node-rpc">—</span>
+        </div>
+      </div>
+      <div class="node-progress" id="node-progress" hidden>
+        <div class="progress-track" id="node-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="progress-fill" id="node-progress-fill"></div>
+        </div>
+        <div class="progress-caption" id="node-progress-caption"></div>
+      </div>
+    </div>
 
     <!-- Audio Ocean Live Stream -->
     <section id="audio-ocean" class="audio-player-hud" aria-labelledby="radio-title">
@@ -639,6 +778,100 @@ function testInference() {
 function testRecall() {
   alert("🧠 [Memory Ocean]: Wave resonance scan complete across 1024-dim spectrum. Recall verified in 380ns!");
 }
+
+// --- Polygon Sovereign Node Status ---
+// Fetches GET /polygon/status (same origin, FastAPI compute server) on load,
+// then refreshes every 30s. Always renders — the endpoint never 5xx.
+(function () {
+  const REFRESH_MS = 30000;
+
+  const dot = document.getElementById('node-dot');
+  const stateEl = document.getElementById('node-state');
+  const cacheEl = document.getElementById('node-cache');
+  const blockEl = document.getElementById('node-block');
+  const chainEl = document.getElementById('node-chain');
+  const rpcEl = document.getElementById('node-rpc');
+  const progress = document.getElementById('node-progress');
+  const fill = document.getElementById('node-progress-fill');
+  const track = document.getElementById('node-progress-track');
+  const caption = document.getElementById('node-progress-caption');
+  if (!dot || !stateEl) return;
+
+  const LIVE = 'live', SYNCING = 'syncing', OFFLINE = 'offline';
+
+  function fmt(n) {
+    return typeof n === 'number' ? n.toLocaleString('en-US') : '—';
+  }
+
+  function setState(kind, label) {
+    dot.className = 'node-dot ' + kind;
+    stateEl.className = 'node-state ' + kind;
+    stateEl.textContent = label;
+  }
+
+  function setMetrics(block, chain, rpc) {
+    blockEl.textContent = fmt(block);
+    blockEl.className = 'node-val ' + (block === null || block === undefined ? 'dim' : 'cyan');
+    chainEl.textContent = chain === null || chain === undefined ? '—' : String(chain);
+    chainEl.className = 'node-val' + (chain === null || chain === undefined ? ' dim' : '');
+    rpcEl.textContent = rpc || '—';
+  }
+
+  function setProgress(pct, current, highest) {
+    if (typeof pct !== 'number' || !isFinite(pct) || !current || !highest) {
+      progress.hidden = true;
+      return;
+    }
+    progress.hidden = false;
+    const clamped = Math.max(0, Math.min(100, pct));
+    fill.style.width = clamped.toFixed(2) + '%';
+    if (track) track.setAttribute('aria-valuenow', clamped.toFixed(1));
+    caption.textContent = fmt(current) + ' / ' + fmt(highest) + ' blocks · ' + clamped.toFixed(2) + '%';
+  }
+
+  function render(data) {
+    if (!data || data.syncing === null || data.syncing === undefined) {
+      setState(OFFLINE, 'Node offline · syncing not yet available');
+      setMetrics(null, null, data && data.rpcUrl);
+      setProgress(null);
+    } else if (data.syncing === false) {
+      setState(LIVE, 'Sovereign node · live');
+      setMetrics(data.blockNumber, data.chainId, data.rpcUrl);
+      setProgress(null);
+    } else {
+      setState(SYNCING, 'Syncing');
+      setMetrics(data.currentBlock, data.chainId, data.rpcUrl);
+      setProgress(
+        data.currentBlock && data.highestBlock
+          ? (data.currentBlock / data.highestBlock) * 100
+          : null,
+        data.currentBlock,
+        data.highestBlock
+      );
+    }
+    cacheEl.hidden = !(data && data.cached === true);
+  }
+
+  function renderOffline() {
+    render({ rpcUrl: null, syncing: null, cached: false });
+  }
+
+  async function refresh() {
+    try {
+      const res = await fetch('/polygon/status');
+      if (!res.ok) { renderOffline(); return; }
+      render(await res.json());
+    } catch (err) {
+      renderOffline();
+    }
+  }
+
+  refresh();
+  setInterval(refresh, REFRESH_MS);
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) refresh();
+  });
+})();
 </script>
 
 </body>

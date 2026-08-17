@@ -12,6 +12,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
 from pydantic import BaseModel, Field
 
+# Polygon sovereign-node status probe (read-only; never 5xx on an unreachable node).
+# Dual import: module mode (`uvicorn server.model_ocean:app`) and script mode
+# (Docker CMD `python server/model_ocean.py`, where `server` is not a package).
+try:
+    from .polygon_node import router as polygon_router
+except ImportError:
+    from polygon_node import router as polygon_router
+
 app = FastAPI(
     title="Ocean Compute Core — Model Ocean API",
     version="1.0.0",
@@ -25,6 +33,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(polygon_router)
 
 class ChatMessage(BaseModel):
     role: str
